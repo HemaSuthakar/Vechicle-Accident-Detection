@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Accident Detection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        h1 { color: #667eea; }
+        h2 { color: #333; font-size: 1.3em; }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+            margin: 5px;
+        }
+        button:hover {
+            background: #5568d3;
+        }
+        .danger {
+            background: #ef4444;
+        }
+        .danger:hover {
+            background: #dc2626;
+        }
+        .info {
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: monospace;
+        }
+        .success { color: #10b981; }
+        .error { color: #ef4444; }
+        .warning { color: #f59e0b; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Accident Detection System - Test Page</h1>
+    
+    <div class="test-section">
+        <h2>1. Browser Compatibility Check</h2>
+        <button onclick="checkCompatibility()">Check Browser Support</button>
+        <div id="compatibilityResult" class="info" style="display:none;"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>2. Sensor Tests</h2>
+        <button onclick="testSensors()">Test Motion Sensors</button>
+        <button onclick="testMicrophone()">Test Microphone</button>
+        <button onclick="testGPS()">Test GPS</button>
+        <div id="sensorResult" class="info" style="display:none;"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>3. Alert System Tests</h2>
+        <button onclick="testAlert('low')">Test Low Severity Alert</button>
+        <button onclick="testAlert('medium')">Test Medium Severity Alert</button>
+        <button onclick="testAlert('high')" class="danger">Test High Severity Alert</button>
+        <button onclick="testAlert('critical')" class="danger">Test Critical Alert</button>
+        <p><em>Note: These will trigger the alert screen. Test the cancel methods!</em></p>
+    </div>
+
+    <div class="test-section">
+        <h2>4. Voice Recognition Test</h2>
+        <button onclick="testVoice()">Test Voice Recognition</button>
+        <p>Say "cancel" or "I'm okay" when prompted</p>
+        <div id="voiceResult" class="info" style="display:none;"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>5. Emergency Simulation</h2>
+        <button onclick="testEmergency()" class="danger">Simulate Emergency Alert</button>
+        <p><strong>⚠️ Warning:</strong> This will attempt to open SMS and phone dialer!</p>
+    </div>
+
+    <div class="test-section">
+        <h2>6. Launch Main App</h2>
+        <button onclick="window.location.href='index.html'" style="background: #10b981; font-size: 1.2em; padding: 15px 30px;">
+            🚀 Open Accident Detection App
+        </button>
+    </div>
+
+    <script>
+        function checkCompatibility() {
+            const result = document.getElementById('compatibilityResult');
+            result.style.display = 'block';
+            
+            const checks = {
+                'Device Motion': 'DeviceMotionEvent' in window,
+                'Device Orientation': 'DeviceOrientationEvent' in window,
+                'Geolocation': 'geolocation' in navigator,
+                'MediaDevices': 'mediaDevices' in navigator,
+                'Speech Recognition': 'SpeechRecognition' in window || 'webkitSpeechRecognition' in window,
+                'Vibration': 'vibrate' in navigator,
+                'Service Worker': 'serviceWorker' in navigator
+            };
+
+            let html = '<strong>Browser Compatibility Results:</strong><br><br>';
+            for (let [feature, supported] of Object.entries(checks)) {
+                const status = supported ? '<span class="success">✓ Supported</span>' : '<span class="error">✗ Not Supported</span>';
+                html += `${feature}: ${status}<br>`;
+            }
+
+            result.innerHTML = html;
+        }
+
+        async function testSensors() {
+            const result = document.getElementById('sensorResult');
+            result.style.display = 'block';
+            result.innerHTML = 'Testing sensors...<br>';
+
+            // Test motion
+            if ('DeviceMotionEvent' in window) {
+                try {
+                    if (typeof DeviceMotionEvent.requestPermission === 'function') {
+                        const permission = await DeviceMotionEvent.requestPermission();
+                        result.innerHTML += `Motion Permission: ${permission}<br>`;
+                    }
+                    
+                    window.addEventListener('devicemotion', function handler(e) {
+                        const accel = e.accelerationIncludingGravity;
+                        result.innerHTML += `<span class="success">✓ Motion detected: x=${accel.x?.toFixed(2)}, y=${accel.y?.toFixed(2)}, z=${accel.z?.toFixed(2)}</span><br>`;
+                        window.removeEventListener('devicemotion', handler);
+                    });
+                } catch (error) {
+                    result.innerHTML += `<span class="error">✗ Motion error: ${error.message}</span><br>`;
+                }
+            } else {
+                result.innerHTML += '<span class="error">✗ Motion sensors not available</span><br>';
+            }
+        }
+
+        async function testMicrophone() {
+            const result = document.getElementById('sensorResult');
+            result.style.display = 'block';
+            result.innerHTML = 'Testing microphone...<br>';
+
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                result.innerHTML += '<span class="success">✓ Microphone access granted!</span><br>';
+                stream.getTracks().forEach(track => track.stop());
+            } catch (error) {
+                result.innerHTML += `<span class="error">✗ Microphone error: ${error.message}</span><br>`;
+            }
+        }
+
+        async function testGPS() {
+            const result = document.getElementById('sensorResult');
+            result.style.display = 'block';
+            result.innerHTML = 'Testing GPS...<br>';
+
+            if ('geolocation' in navigator) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        result.innerHTML += `<span class="success">✓ GPS works! Location: ${position.coords.latitude.toFixed(6)}, ${position.coords.longitude.toFixed(6)}</span><br>`;
+                    },
+                    (error) => {
+                        result.innerHTML += `<span class="error">✗ GPS error: ${error.message}</span><br>`;
+                    }
+                );
+            } else {
+                result.innerHTML += '<span class="error">✗ GPS not available</span><br>';
+            }
+        }
+
+        function testAlert(severity) {
+            // Save test info and redirect
+            localStorage.setItem('testAlert', JSON.stringify({
+                severity: severity,
+                impactForce: Math.random() * 10,
+                soundLevel: 80 + Math.random() * 40
+            }));
+            window.location.href = 'index.html?test=alert';
+        }
+
+        function testVoice() {
+            const result = document.getElementById('voiceResult');
+            result.style.display = 'block';
+
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            
+            if (!SpeechRecognition) {
+                result.innerHTML = '<span class="error">✗ Speech recognition not supported</span>';
+                return;
+            }
+
+            const recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+
+            result.innerHTML = '<span class="warning">🎤 Listening... Say something!</span>';
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                result.innerHTML = `<span class="success">✓ Heard: "${transcript}"</span>`;
+            };
+
+            recognition.onerror = (event) => {
+                result.innerHTML = `<span class="error">✗ Error: ${event.error}</span>`;
+            };
+
+            recognition.start();
+        }
+
+        function testEmergency() {
+            if (!confirm('This will attempt to open SMS and phone dialer. Continue?')) {
+                return;
+            }
+
+            localStorage.setItem('testEmergency', 'true');
+            window.location.href = 'index.html?test=emergency';
+        }
+
+        // Auto-run compatibility check
+        window.addEventListener('load', () => {
+            checkCompatibility();
+        });
+    </script>
+</body>
+</html>
