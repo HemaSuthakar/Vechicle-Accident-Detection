@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Accident Detection System</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="styles.css?v=22">
+</head>
+<body>
+    <div id="app">
+        <!-- Main Dashboard -->
+        <div id="dashboard" class="screen active">
+            <div class="header">
+                <h1>🚨 Accident Detection</h1>
+                <div class="status-indicator">
+                    <span class="status-dot" id="statusDot"></span>
+                    <span id="statusText">Initializing...</span>
+                </div>
+            </div>
+
+            <!-- Tab: Monitoring -->
+            <div id="tab-monitoring" class="tab-content active">
+            
+            <!-- SOS Button at Top -->
+            <div class="controls">
+                <div class="sos-button-container">
+                    <button id="startBtn" class="btn-sos" onclick="startMonitoring()">
+                        <div class="sos-pulse"></div>
+                        <div class="sos-content">
+                            <span class="sos-icon">🚨</span>
+                            <span class="sos-text">START</span>
+                            <span class="sos-subtext">MONITORING</span>
+                        </div>
+                    </button>
+                    <button id="stopBtn" class="btn-sos stop" onclick="stopMonitoring()" style="display:none;">
+                        <div class="sos-content">
+                            <span class="sos-icon">⏸️</span>
+                            <span class="sos-text">STOP</span>
+                            <span class="sos-subtext">MONITORING</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="info-cards">
+                <div class="card">
+                    <h3>Monitoring Status</h3>
+                    <div class="sensor-status">
+                        <div class="sensor-item">
+                            <span>📱 Accelerometer:</span>
+                            <span id="accelStatus" class="status-badge">Off</span>
+                        </div>
+                        <div class="sensor-item">
+                            <span>🔄 Gyroscope:</span>
+                            <span id="gyroStatus" class="status-badge">Off</span>
+                        </div>
+                        <div class="sensor-item">
+                            <span>🎤 Microphone:</span>
+                            <span id="micStatus" class="status-badge">Off</span>
+                        </div>
+                        <div class="sensor-item">
+                            <span>📍 GPS:</span>
+                            <span id="gpsStatus" class="status-badge">Off</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Current Readings</h3>
+                    <div class="readings">
+                        <div class="reading-item">
+                            <span>Impact Force:</span>
+                            <span id="impactForce">0.0 g</span>
+                        </div>
+                        <div class="reading-item">
+                            <span>Sound Level:</span>
+                            <span id="soundLevel">0 dB</span>
+                        </div>
+                        <div class="reading-item">
+                            <span>Severity:</span>
+                            <span id="severityLevel">None</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            </div>
+
+            <!-- Tab: Test/Simulate -->
+            <div id="tab-test" class="tab-content">
+                <div class="card">
+                    <h3>🧪 Simulate Accident Scenarios</h3>
+                    <p style="color: #6b7280; margin-bottom: 15px;">Test the accident detection system with different severity levels</p>
+                    
+                    <div class="test-scenarios">
+                        <div class="scenario-card">
+                            <div class="scenario-icon">⚠️</div>
+                            <h4>Low Severity</h4>
+                            <p>Minor bump (2.5-4g)</p>
+                            <button class="btn-scenario low" onclick="simulateAccident('low')">Trigger Low Alert</button>
+                        </div>
+
+                        <div class="scenario-card">
+                            <div class="scenario-icon">🔶</div>
+                            <h4>Medium Severity</h4>
+                            <p>Moderate impact (4-6g)</p>
+                            <button class="btn-scenario medium" onclick="simulateAccident('medium')">Trigger Medium Alert</button>
+                        </div>
+
+                        <div class="scenario-card">
+                            <div class="scenario-icon">🚨</div>
+                            <h4>High Severity</h4>
+                            <p>Severe crash (6-8g)</p>
+                            <button class="btn-scenario high" onclick="simulateAccident('high')">Trigger High Alert</button>
+                        </div>
+
+                        <div class="scenario-card">
+                            <div class="scenario-icon">🆘</div>
+                            <h4>Critical Severity</h4>
+                            <p>Life-threatening (8g+)</p>
+                            <button class="btn-scenario critical" onclick="simulateAccident('critical')">Trigger Critical Alert</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>How It Works</h3>
+                    <div class="info-list">
+                        <div class="info-item">
+                            <span class="info-number">1️⃣</span>
+                            <div>
+                                <strong>Alert Triggered</strong>
+                                <p>Countdown timer starts based on severity (15-60 seconds)</p>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-number">2️⃣</span>
+                            <div>
+                                <strong>User Response Options</strong>
+                                <p>• Tap "I'm Okay" button<br>• Say "cancel" or "I'm okay"<br>• Shake your phone</p>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-number">3️⃣</span>
+                            <div>
+                                <strong>No Response = Emergency</strong>
+                                <p>• SMS sent with GPS location<br>• Automatic call initiated<br>• Emergency services notified</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Settings -->
+            <div id="tab-settings" class="tab-content">
+                <div class="card">
+                    <h3>Sensor Permissions</h3>
+                    <div class="permission-settings">
+                        <div class="permission-item">
+                            <div class="permission-info">
+                                <span class="permission-icon">📱</span>
+                                <div>
+                                    <strong>Accelerometer</strong>
+                                    <p>Detects sudden impacts and movements</p>
+                                </div>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="enableAccelerometer" checked onchange="toggleSensor('accelerometer', this.checked)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="permission-item">
+                            <div class="permission-info">
+                                <span class="permission-icon">🔄</span>
+                                <div>
+                                    <strong>Gyroscope</strong>
+                                    <p>Detects rotation and orientation changes</p>
+                                </div>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="enableGyroscope" checked onchange="toggleSensor('gyroscope', this.checked)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="permission-item">
+                            <div class="permission-info">
+                                <span class="permission-icon">🎤</span>
+                                <div>
+                                    <strong>Microphone</strong>
+                                    <p>Listens for crash sounds</p>
+                                </div>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="enableMicrophone" checked onchange="toggleSensor('microphone', this.checked)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="permission-item">
+                            <div class="permission-info">
+                                <span class="permission-icon">📍</span>
+                                <div>
+                                    <strong>GPS Location</strong>
+                                    <p>Tracks your location for emergencies</p>
+                                </div>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="enableGPS" checked onchange="toggleSensor('gps', this.checked)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Emergency Contacts</h3>
+                    <div id="emergencyContacts">
+                        <input type="text" id="emergencyNumber" placeholder="Enter emergency number" value="911">
+                        <button onclick="saveEmergencyNumber()">💾 Save Number</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Detection Sensitivity</h3>
+                    <div class="sensitivity-controls">
+                        <label for="impactThreshold">Impact Threshold (g-force)</label>
+                        <input type="range" id="impactThreshold" min="2" max="10" value="4" step="0.5">
+                        <span id="impactValue">4.0g</span>
+                    </div>
+                    <div class="sensitivity-controls">
+                        <label for="soundThreshold">Sound Threshold (dB)</label>
+                        <input type="range" id="soundThreshold" min="80" max="120" value="100" step="5">
+                        <span id="soundValue">100 dB</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Alert Settings</h3>
+                    <div class="alert-settings">
+                        <label>
+                            <input type="checkbox" id="enableVoice" checked>
+                            Enable Voice Commands
+                        </label>
+                        <label>
+                            <input type="checkbox" id="enableShake" checked>
+                            Enable Shake Gesture
+                        </label>
+                        <label>
+                            <input type="checkbox" id="enableVibration" checked>
+                            Enable Vibration
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>Emergency Auto-Send Settings</h3>
+                    <p style="color: #6b7280; font-size: 0.9em; margin-bottom: 15px;">⚠️ Enable automatic emergency actions (requires device/browser support)</p>
+                    <div class="permission-settings">
+                        <div class="permission-item">
+                            <div class="permission-info">
+                                <span class="permission-icon">💬</span>
+                                <div>
+                                    <strong>Auto-Send SMS</strong>
+                                    <p>Automatically send emergency SMS without confirmation</p>
+                                </div>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="enableAutoSMS" onchange="toggleAutoAction('autoSMS', this.checked)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="permission-item">
+                            <div class="permission-info">
+                                <span class="permission-icon">📞</span>
+                                <div>
+                                    <strong>Auto-Dial Call</strong>
+                                    <p>Automatically place emergency call without confirmation</p>
+                                </div>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="enableAutoCall" onchange="toggleAutoAction('autoCall', this.checked)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="permission-item">
+                            <div class="permission-info">
+                                <span class="permission-icon">🔔</span>
+                                <div>
+                                    <strong>Send Notifications</strong>
+                                    <p>Send browser/system notifications for emergencies</p>
+                                </div>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="enableNotifications" checked onchange="toggleAutoAction('notifications', this.checked)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Logs -->
+            <div id="tab-logs" class="tab-content">
+            <div class="logs">
+                <h3>Activity Log</h3>
+                <div class="log-controls">
+                    <button class="btn-small" onclick="clearLogs()">Clear Logs</button>
+                    <button class="btn-small" onclick="exportLogs()">Export</button>
+                </div>
+                <div id="logContainer"></div>
+            </div>
+            </div>
+
+            <!-- Bottom Navigation Bar (Instagram Style) -->
+            <div class="bottom-nav">
+                <button class="nav-item active" data-tab="monitoring" onclick="switchTab('monitoring', this)">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"/>
+                    </svg>
+                    <span class="nav-label">Monitor</span>
+                </button>
+                <button class="nav-item" data-tab="test" onclick="switchTab('test', this)">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 6v6l4 2"/>
+                    </svg>
+                    <span class="nav-label">Test</span>
+                </button>
+                <button class="nav-item" data-tab="settings" onclick="switchTab('settings', this)">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M12 1v6m0 6v6M4.22 4.22l4.24 4.24m5.66 5.66l4.24 4.24M1 12h6m6 0h6M4.22 19.78l4.24-4.24m5.66-5.66l4.24-4.24"/>
+                    </svg>
+                    <span class="nav-label">Settings</span>
+                </button>
+                <button class="nav-item" data-tab="logs" onclick="switchTab('logs', this)">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                        <path d="M14 2v6h6M16 13H8m8 4H8m8 4H8"/>
+                    </svg>
+                    <span class="nav-label">Logs</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Alert Screen -->
+        <div id="alertScreen" class="screen alert-screen">
+            <div class="alert-content">
+                <div class="alert-icon">⚠️</div>
+                <h1>ACCIDENT DETECTED!</h1>
+                <p class="severity-text" id="alertSeverity">High Severity Incident</p>
+                
+                <div class="countdown-circle">
+                    <div class="countdown-text">
+                        <span id="countdownNumber">30</span>
+                        <span class="countdown-label">seconds</span>
+                    </div>
+                </div>
+
+                <div class="alert-info">
+                    <p>📍 <span id="alertLocation">Getting location...</span></p>
+                    <p>Emergency services will be notified if you don't respond</p>
+                </div>
+
+                <div class="alert-actions">
+                    <button class="btn btn-cancel" onclick="cancelAlert()">I'M OKAY - CANCEL</button>
+                    <button class="btn btn-emergency" onclick="callEmergencyNow()">CALL EMERGENCY NOW</button>
+                </div>
+
+                <div class="voice-prompt">
+                    <div class="pulse-indicator"></div>
+                    <p>Say "CANCEL", "I'M OKAY" or shake your phone to dismiss</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Emergency Sent Screen -->
+        <div id="emergencyScreen" class="screen emergency-screen">
+            <div class="emergency-content">
+                <div class="emergency-icon">🚑</div>
+                <h1>EMERGENCY ALERT SENT</h1>
+                <p>Help is on the way!</p>
+                
+                <div class="emergency-details">
+                    <p><strong>Location sent:</strong></p>
+                    <p id="emergencyLocation"></p>
+                    <p><strong>Time:</strong> <span id="emergencyTime"></span></p>
+                    <p><strong>Services notified:</strong></p>
+                    <ul id="notifiedServices"></ul>
+                </div>
+
+                <button class="btn btn-primary" onclick="returnToDashboard()">Return to Dashboard</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="sensors.js?v=3"></script>
+    <script src="detection.js?v=3"></script>
+    <script src="alert.js?v=21"></script>
+    <script src="emergency.js?v=23"></script>
+    <script src="app.js?v=5"></script>
+</body>
+</html>
